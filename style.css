@@ -1,0 +1,1374 @@
+
+/* =================================
+   HABITFORGE - PREMIUM DESIGN
+================================= */
+
+/* BASE */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    min-height: 100%;
+    background: #0b1020;
+}
+
+body {
+    min-height: 100vh;
+    margin: 0;
+    padding: 40px 20px;
+
+    background-color: #0b1020;
+    background-image:
+        linear-gradient(
+            rgba(5, 10, 25, 0.65),
+            rgba(5, 10, 25, 0.85)
+        ),
+        url("./background.webp");
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+
+    color: #e5e7eb;
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+/* HEADER */
+
+header {
+    margin-bottom: 50px;
+}
+
+header h1 {
+    color: #38bdf8;
+    font-size: 36px;
+    letter-spacing: 5px;
+    font-weight: 800;
+}
+
+header p {
+    color: #cbd5e1;
+    font-size: 14px;
+}
+
+/* MAIN */
+
+main {
+    max-width: 600px;
+    margin: auto;
+}
+
+h2 {
+    margin-bottom: 25px;
+    color: #f1f5f9;
+}
+
+/* DASHBOARD */
+
+#dashboard {
+    background: rgba(20, 35, 60, 0.78);
+
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    border-radius: 20px;
+
+    padding: 25px;
+    margin-bottom: 25px;
+    text-align: left;
+
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+}
+
+#dashboard h3 {
+    color: #f1f5f9;
+    font-size: 18px;
+    margin-top: 0;
+}
+
+#progress-text {
+    color: #38bdf8;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 10px;
+
+    background: rgba(255, 255, 255, 0.12);
+
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+#progress-fill {
+    width: 0%;
+    height: 100%;
+
+    background: linear-gradient(
+        90deg,
+        #38bdf8,
+        #2563eb
+    );
+
+    border-radius: 20px;
+
+    transition: width 0.5s ease;
+
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.5);
+}
+
+/* HABIT CARDS - GLASSMORPHISM */
+
+.habit-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    background: rgba(255, 255, 255, 0.07);
+
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+
+    border: 1px solid rgba(255, 255, 255, 0.13);
+
+    padding: 18px;
+    margin-bottom: 14px;
+
+    border-radius: 16px;
+
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+
+    transition: all 0.25s ease;
+}
+
+.habit-item:hover {
+    background: rgba(56, 189, 248, 0.12);
+
+    border-color: rgba(56, 189, 248, 0.5);
+
+    transform: translateY(-3px);
+}
+
+.habit-checkbox {
+    width: 20px;
+    height: 20px;
+
+    accent-color: #38bdf8;
+    cursor: pointer;
+}
+
+.habit-name {
+    color: #f1f5f9;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+/* BUTTONS */
+
+button {
+    border: none;
+    padding: 14px 25px;
+
+    border-radius: 12px;
+    font-size: 16px;
+
+    cursor: pointer;
+}
+
+#add-habit {
+    width: 100%;
+    margin-top: 15px;
+
+    background: linear-gradient(
+        135deg,
+        #38bdf8,
+        #2563eb
+    );
+
+    color: white;
+    font-weight: bold;
+
+    transition: 0.2s ease;
+}
+
+#add-habit:hover {
+    transform: translateY(-2px);
+
+    box-shadow: 0 5px 20px #2563eb66;
+}
+
+/* FOOTER */
+
+footer {
+    margin-top: 60px;
+    color: #aaa;
+    font-size: 13px;
+}
+
+/* MOBILE RESPONSIVE */
+
+@media (max-width: 600px) {
+
+    body {
+        padding: 25px 15px;
+    }
+
+    header h1 {
+        font-size: 28px;
+        letter-spacing: 3px;
+    }
+
+    #dashboard {
+        padding: 20px;
+    }
+
+    .habit-item {
+        padding: 15px;
+    }
+}
+
+/* ===== HABIT STATISTICS ===== */
+
+.habit-item {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+    text-align: left;
+}
+
+.habit-heading {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.habit-details {
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.habit-created,
+.habit-period {
+    color: #94a3b8;
+    font-size: 11px;
+}
+
+.habit-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(85px, 1fr));
+    gap: 10px;
+    margin: 18px 0;
+}
+
+.habit-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.habit-stat strong {
+    color: #38bdf8;
+    font-size: 21px;
+}
+
+.habit-stat span {
+    color: #94a3b8;
+    font-size: 11px;
+}
+
+.habit-progress-track {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.habit-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #38bdf8, #2563eb);
+    border-radius: 10px;
+    transition: width 0.5s ease;
+}
+
+/* HABIT ACTION ICONS */
+.habit-heading {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.habit-actions {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-left: auto;
+}
+
+.habit-actions button {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 16px;
+    line-height: 1;
+    transition: all 0.2s ease;
+}
+
+.habit-actions .edit-button {
+    color: #38bdf8;
+}
+
+.habit-actions .delete-button {
+    color: #f87171;
+}
+
+.habit-actions .edit-button:hover {
+    background: rgba(56, 189, 248, 0.15);
+    border-color: rgba(56, 189, 248, 0.35);
+}
+
+.habit-actions .delete-button:hover {
+    background: rgba(248, 113, 113, 0.15);
+    border-color: rgba(248, 113, 113, 0.35);
+}
+
+/* ===== DELETE CONFIRMATION MODAL ===== */
+
+.modal-overlay[hidden] {
+    display: none;
+}
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+    background: rgba(2, 6, 18, 0.78);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.modal-box {
+    width: 100%;
+    max-width: 380px;
+    padding: 30px 25px;
+
+    background: #111c30;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 22px;
+
+    text-align: center;
+
+    box-shadow: 0 20px 70px rgba(0, 0, 0, 0.55);
+
+    animation: modalAppear 0.25s ease;
+}
+
+@keyframes modalAppear {
+    from {
+        opacity: 0;
+        transform: translateY(15px) scale(0.96);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.modal-icon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+    background: rgba(248, 113, 113, 0.12);
+    border: 1px solid rgba(248, 113, 113, 0.3);
+
+    color: #f87171;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.modal-box h3 {
+    color: #f1f5f9;
+    font-size: 21px;
+    margin: 0 0 12px;
+}
+
+.modal-box p {
+    color: #cbd5e1;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+#delete-habit-name {
+    color: #38bdf8;
+}
+
+.modal-box .modal-warning {
+    color: #f87171;
+    font-size: 12px;
+    margin-top: 8px;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 25px;
+}
+
+.modal-actions button {
+    flex: 1;
+    padding: 12px;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 10px;
+}
+
+.cancel-button {
+    background: rgba(255, 255, 255, 0.08);
+    color: #cbd5e1;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.confirm-delete-button {
+    background: #dc4545;
+    color: white;
+}
+
+.cancel-button:hover {
+    background: rgba(255, 255, 255, 0.14);
+}
+
+.confirm-delete-button:hover {
+    background: #ef4444;
+}
+
+/* ===== EDIT HABIT MODAL ===== */
+
+.edit-modal-icon {
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.12);
+    border-color: rgba(56, 189, 248, 0.3);
+}
+
+.edit-habit-input {
+    width: 100%;
+    padding: 14px;
+    margin-top: 12px;
+
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 10px;
+
+    color: #f1f5f9;
+    font-size: 14px;
+    outline: none;
+
+    transition: border-color 0.2s ease;
+}
+
+.edit-habit-input:focus {
+    border-color: #38bdf8;
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.1);
+}
+
+.edit-habit-input::placeholder {
+    color: #64748b;
+}
+
+.save-edit-button {
+    background: linear-gradient(135deg, #38bdf8, #2563eb);
+    color: white;
+    border: none;
+}
+
+.save-edit-button:hover {
+    box-shadow: 0 5px 18px rgba(37, 99, 235, 0.35);
+}
+/* MORE DETAILS BUTTON */
+.more-button {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 9px;
+    color: #cbd5e1;
+    font-size: 21px;
+    line-height: 1;
+}
+
+.more-button:hover {
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+}
+
+/* Hide collapsed details */
+.habit-details[hidden] {
+    display: none;
+}
+/* ===== HABITS HEADER ===== */
+
+.habits-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 25px;
+}
+
+.habits-header h2 {
+    margin: 0;
+    color: #f1f5f9;
+    font-size: 22px;
+}
+
+#monthly-report-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    background: rgba(56, 189, 248, 0.10);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    color: #7dd3fc;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+#monthly-report-button:hover {
+    background: rgba(56, 189, 248, 0.18);
+    border-color: rgba(56, 189, 248, 0.5);
+    transform: translateY(-2px);
+}
+
+.report-icon {
+    font-size: 16px;
+}
+
+@media (max-width: 400px) {
+    .habits-header h2 {
+        font-size: 19px;
+    }
+
+    #monthly-report-button {
+        padding: 9px 10px;
+        font-size: 11px;
+    }
+}
+
+/* ==========================================
+   HABITFORGE - MONTHLY REPORT
+========================================== */
+
+/* Report modal */
+.report-modal-box {
+    max-width: 520px;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 25px;
+    text-align: left;
+    background: rgba(13, 24, 43, 0.98);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+}
+
+/* Header */
+.report-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 22px;
+}
+
+.report-header h3 {
+    color: #f1f5f9;
+    font-size: 23px;
+    margin: 4px 0 0;
+}
+
+.report-label {
+    color: #38bdf8;
+    font-size: 10px;
+    letter-spacing: 2px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.report-close {
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #cbd5e1;
+    font-size: 22px;
+}
+
+/* Month selector */
+.report-month-selector {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 12px;
+    margin-bottom: 20px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+}
+
+.report-month-selector span {
+    color: #f1f5f9;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.report-month-selector button {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    background: rgba(56, 189, 248, 0.12);
+    color: #38bdf8;
+    border-radius: 8px;
+    font-size: 22px;
+}
+
+.report-month-selector button:disabled {
+    opacity: 0.25;
+    cursor: not-allowed;
+}
+
+/* Summary cards */
+.report-summary {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 25px;
+}
+
+.report-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    padding: 18px;
+    background: rgba(56, 189, 248, 0.07);
+    border: 1px solid rgba(56, 189, 248, 0.18);
+    border-radius: 15px;
+}
+
+.report-stat strong {
+    color: #38bdf8;
+    font-size: 29px;
+    font-weight: 800;
+}
+
+.report-stat span {
+    color: #94a3b8;
+    font-size: 11px;
+}
+
+/* Section headings */
+.report-section-title {
+    color: #e2e8f0;
+    font-size: 15px;
+    margin: 22px 0 15px;
+}
+
+/* Individual habit */
+.report-habit-item {
+    padding: 15px;
+    margin-bottom: 12px;
+    background: rgba(255, 255, 255, 0.045);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 13px;
+}
+
+.report-habit-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.report-habit-heading strong {
+    color: #f1f5f9;
+    font-size: 13px;
+}
+
+.report-habit-heading span {
+    color: #38bdf8;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+/* Progress bar */
+.report-progress-track {
+    width: 100%;
+    height: 7px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.report-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #38bdf8, #2563eb);
+    border-radius: 20px;
+    transition: width 0.4s ease;
+}
+
+.report-habit-item p {
+    color: #94a3b8;
+    font-size: 11px;
+    margin: 9px 0 0;
+}
+
+/* Insights */
+#report-insights {
+    margin-top: 22px;
+    padding: 16px;
+    background: rgba(56, 189, 248, 0.06);
+    border: 1px solid rgba(56, 189, 248, 0.15);
+    border-radius: 14px;
+}
+
+#report-insights .report-section-title {
+    margin-top: 0;
+}
+
+#report-insights p {
+    color: #cbd5e1;
+    font-size: 12px;
+    line-height: 1.7;
+    margin: 8px 0;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+    .report-modal-box {
+        padding: 20px 16px;
+        max-height: 88vh;
+    }
+
+    .report-header h3 {
+        font-size: 20px;
+    }
+
+    .report-stat {
+        padding: 14px;
+    }
+
+    .report-stat strong {
+        font-size: 25px;
+    }
+}
+
+/* =================================
+   WEEKLY REPORT DESIGN
+================================= */
+
+.weekly-day-item {
+    padding: 13px 14px;
+    margin-bottom: 12px;
+    background: rgba(255, 255, 255, 0.045);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+}
+
+.weekly-day-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.weekly-day-heading strong {
+    color: #e2e8f0;
+    font-size: 13px;
+}
+
+.weekly-day-heading span {
+    color: #38bdf8;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.weekly-day-item .report-progress-track {
+    height: 8px;
+}
+
+#weekly-insights {
+    margin-top: 22px;
+    padding: 16px;
+    background: rgba(56, 189, 248, 0.06);
+    border: 1px solid rgba(56, 189, 248, 0.15);
+    border-radius: 14px;
+}
+
+#weekly-insights p {
+    color: #cbd5e1;
+    font-size: 12px;
+    line-height: 1.7;
+    margin: 8px 0;
+}
+
+#weekly-insights strong {
+    color: #38bdf8;
+}
+
+/* WEEKLY REPORT BUTTON */
+
+#weekly-report-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border-radius: 10px;
+
+    background: rgba(56, 189, 248, 0.10);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+
+    color: #7dd3fc;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+
+    transition: all 0.2s ease;
+}
+
+#weekly-report-button:hover {
+    background: rgba(56, 189, 248, 0.18);
+    border-color: rgba(56, 189, 248, 0.5);
+    transform: translateY(-2px);
+}
+
+@media (max-width: 400px) {
+    #weekly-report-button {
+        padding: 9px 10px;
+        font-size: 11px;
+    }
+}
+
+/* Today's Date Card - Enhanced */
+.today-date {
+    display: inline-block;
+    margin-top: 24px;
+    padding: 20px 38px;
+    text-align: center;
+    background: linear-gradient(145deg, #1b2d49, #111e32);
+    border: 1px solid rgba(91, 163, 255, 0.4);
+    border-radius: 16px;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35),
+                0 0 18px rgba(55, 130, 220, 0.12);
+}
+
+.today-date h2 {
+    font-size: 32px;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0 0 8px;
+    letter-spacing: 0.7px;
+}
+
+.today-date p {
+    font-size: 16px;
+    font-weight: 500;
+    color: #a9c9f5;
+    margin: 0;
+    letter-spacing: 1px;
+}
+
+/* =========================
+   CALENDAR PAGE
+========================= */
+
+.calendar-page {
+    max-width: 700px;
+    margin: 40px auto;
+    padding: 25px;
+    color: #ffffff;
+}
+
+.calendar-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.calendar-header h2 {
+    font-size: 28px;
+    margin: 20px 0 8px;
+}
+
+.calendar-header p {
+    color: #8b9bb4;
+    font-size: 14px;
+}
+
+.back-button {
+    display: block;
+    background: #17243a;
+    color: #a9c9f5;
+    border: 1px solid rgba(91, 163, 255, 0.25);
+    padding: 10px 18px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.calendar-container {
+    background: linear-gradient(145deg, #17243a, #101827);
+    border: 1px solid rgba(91, 163, 255, 0.25);
+    border-radius: 18px;
+    padding: 22px;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.3);
+}
+
+.calendar-navigation {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 25px;
+}
+
+.calendar-navigation h3 {
+    font-size: 19px;
+    margin: 0;
+}
+
+.calendar-navigation button {
+    background: #243b5b;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+    text-align: center;
+}
+
+.calendar-day {
+    padding: 12px 0;
+    border-radius: 9px;
+    background: rgba(255, 255, 255, 0.04);
+    color: #d4deed;
+    font-size: 14px;
+}
+
+.calendar-weekday {
+    color: #8b9bb4;
+    font-size: 12px;
+    font-weight: 600;
+    padding-bottom: 8px;
+}
+
+.calendar-day.today {
+    border: 1px solid #5ba3ff;
+    color: #ffffff;
+    background: rgba(91, 163, 255, 0.18);
+}
+
+.calendar-day.completed {
+    background: #176b50;
+    color: #ffffff;
+}
+
+.calendar-day.empty {
+    background: transparent;
+}
+
+/* =========================
+   DAILY DETAILS MODAL
+========================= */
+
+.daily-details-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(6px);
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.daily-details-content {
+    position: relative;
+    width: 100%;
+    max-width: 430px;
+    max-height: 85vh;
+    overflow-y: auto;
+    background: linear-gradient(145deg, #17243a, #101827);
+    border: 1px solid rgba(91, 163, 255, 0.3);
+    border-radius: 18px;
+    padding: 28px 22px;
+    color: #ffffff;
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.5);
+}
+
+.close-details {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    background: transparent;
+    border: none;
+    color: #a9c9f5;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+.daily-details-content > h2 {
+    font-size: 20px;
+    margin: 10px 30px 22px 0;
+}
+
+.daily-summary {
+    text-align: center;
+    padding: 20px;
+    background: rgba(91, 163, 255, 0.1);
+    border: 1px solid rgba(91, 163, 255, 0.2);
+    border-radius: 13px;
+    margin-bottom: 22px;
+}
+
+.daily-summary h3 {
+    font-size: 32px;
+    color: #7eb5ff;
+    margin: 0 0 5px;
+}
+
+.daily-summary p {
+    color: #a9c9f5;
+    font-size: 13px;
+    margin: 0;
+}
+
+.daily-habit-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 12px;
+    margin-bottom: 9px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 10px;
+}
+
+.daily-habit-name {
+    font-size: 14px;
+    color: #e2eaf5;
+}
+
+.daily-habit-status {
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.daily-habit-status.done {
+    color: #43c995;
+}
+
+.daily-habit-status.pending {
+    color: #a0aabd;
+}
+
+/* =================================
+   HABITFORGE - MOBILE OPTIMIZATION
+================================= */
+
+@media (max-width: 600px) {
+
+    body {
+        padding: 25px 14px;
+        background-attachment: scroll;
+    }
+
+    header {
+        margin-bottom: 35px;
+    }
+
+    header h1 {
+        font-size: 27px;
+        letter-spacing: 3px;
+    }
+
+    header p {
+        font-size: 13px;
+    }
+
+    main {
+        width: 100%;
+    }
+
+    /* Today's Date */
+    .today-date {
+        max-width: 100%;
+        padding: 17px 25px;
+    }
+
+    .today-date h2 {
+        font-size: 27px;
+    }
+
+    .today-date p {
+        font-size: 14px;
+    }
+
+    /* Dashboard */
+    #dashboard {
+        padding: 18px;
+        border-radius: 16px;
+    }
+
+    /* Habits */
+    .habit-item {
+        padding: 15px;
+        gap: 13px;
+    }
+
+    .habit-heading {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .habit-name {
+        font-size: 14px;
+        overflow-wrap: anywhere;
+    }
+
+    .habit-actions {
+        gap: 9px;
+    }
+
+    .habit-actions button,
+    .more-button {
+        width: 36px;
+        height: 36px;
+    }
+
+    .habit-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 15px;
+    }
+
+    /* Reports buttons */
+    .habits-header {
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+
+    .habits-header h2 {
+        width: 100%;
+        text-align: left;
+    }
+
+    #monthly-report-button,
+    #weekly-report-button {
+        flex: 1;
+        min-width: 0;
+        padding: 11px 8px;
+        font-size: 11px;
+    }
+
+    /* Calendar */
+    .calendar-page {
+        width: 100%;
+        margin: 20px auto;
+        padding: 8px;
+    }
+
+    .calendar-container {
+        padding: 15px 10px;
+        border-radius: 15px;
+    }
+
+    .calendar-grid {
+        gap: 5px;
+    }
+
+    .calendar-day {
+        min-height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 8px 0;
+        font-size: 13px;
+    }
+
+    .calendar-weekday {
+        font-size: 10px;
+    }
+
+    .calendar-navigation h3 {
+        font-size: 16px;
+    }
+
+    .calendar-navigation button {
+        width: 40px;
+        height: 40px;
+    }
+
+    /* Daily Details */
+    .daily-details-modal {
+        padding: 12px;
+    }
+
+    .daily-details-content {
+        max-height: 90vh;
+        padding: 25px 17px;
+    }
+
+    /* Modals */
+    .modal-overlay {
+        padding: 12px;
+    }
+
+    .modal-box {
+        padding: 25px 18px;
+    }
+
+    .report-modal-box {
+        max-height: 90vh;
+        padding: 18px 14px;
+    }
+
+    /* Buttons */
+    button {
+        -webkit-tap-highlight-color: transparent;
+    }
+}
+
+@media (max-width: 380px) {
+
+    body {
+        padding: 20px 10px;
+    }
+
+    header h1 {
+        font-size: 24px;
+    }
+
+    .habit-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .calendar-grid {
+        gap: 3px;
+    }
+
+    .calendar-day {
+        min-height: 38px;
+        font-size: 12px;
+    }
+
+    .report-stat strong {
+        font-size: 22px;
+    }
+}/* Google Authentication */
+
+.main-header {
+    position: relative;
+}
+
+.main-header .auth-section {
+    position: absolute;
+    top: 15px;
+    right: 25px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 100;
+}
+
+.main-header .google-login-button {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 9px 15px;
+    background: #17263d;
+    color: #ffffff;
+    border: 1px solid #344b6c;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.main-header .google-login-button span {
+    color: #4285F4;
+    font-size: 17px;
+    font-weight: bold;
+}
+
+.main-header .google-login-button:hover {
+    background: #223956;
+    border-color: #6485b2;
+}
+
+.main-header #auth-status {
+    margin: 0;
+    color: #9aabc2;
+    font-size: 12px;
+}
+
+.main-header #logout-button {
+    padding: 8px 12px;
+    border-radius: 9px;
+    background: #25364d;
+    color: white;
+    border: 1px solid #405675;
+    cursor: pointer;
+}
+
+@media (max-width: 600px) {
+    .main-header .auth-section {
+        top: 10px;
+        right: 10px;
+    }
+
+    .main-header .google-login-button {
+        padding: 8px 11px;
+        font-size: 12px;
+    }
+}
