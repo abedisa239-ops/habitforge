@@ -211,7 +211,8 @@ habits = habits.map(function(habit) {
 function saveHabits() {
     localStorage.setItem("habits", JSON.stringify(habits));
 }
-
+// Save upgraded habits and their generated IDs
+saveHabits();
 // ============================================
 // CLOUD SYNC ENGINE
 // ============================================
