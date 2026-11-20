@@ -1,13 +1,15 @@
 
-const CACHE_NAME = "habitforge-v1";
+const CACHE_NAME = "habitforge-v2";
 
 const FILES_TO_CACHE = [
     "./",
     "./index.html",
     "./style.css",
     "./script.js",
+    "./supabase.js",
     "./manifest.json",
-    "./icons/icon-512.png"
+    "./icons/icon-512.png",
+    "./background.webp"
 ];
 
 self.addEventListener("install", function(event) {
