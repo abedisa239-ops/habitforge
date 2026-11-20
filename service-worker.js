@@ -1,5 +1,5 @@
 
-const CACHE_NAME = "habitforge-v2";
+const CACHE_NAME = "habitforge-v3";
 
 const FILES_TO_CACHE = [
     "./",
