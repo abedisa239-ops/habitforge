@@ -173,7 +173,16 @@ function dateToKey(date) {
 // 3. LOAD SAVED HABITS
 
 let habits = JSON.parse(localStorage.getItem("habits")) || [];
+let pendingDeletions = JSON.parse(
+    localStorage.getItem("pendingHabitDeletions") || "[]"
+);
 
+function savePendingDeletions() {
+    localStorage.setItem(
+        "pendingHabitDeletions",
+        JSON.stringify(pendingDeletions)
+    );
+}
 
 // Upgrade old data without losing history
 habits = habits.map(function(habit) {
@@ -220,7 +229,7 @@ saveHabits();
 let cloudSyncReady = false;
 let habitsChannel = null;
 let cloudSyncInProgress = false;
-// Convert Supabase row to app habit
+
 function cloudRowToHabit(row) {
     return {
         id: row.id,
@@ -233,7 +242,6 @@ function cloudRowToHabit(row) {
     };
 }
 
-// Convert app habit to Supabase row
 function habitToCloudRow(habit, userId) {
     return {
         id: habit.id,
@@ -245,7 +253,43 @@ function habitToCloudRow(habit, userId) {
     };
 }
 
-// Upload one habit
+async function recordHabitDeletion(habitId) {
+    const { data: { user }, error: authError } =
+        await supabaseClient.auth.getUser();
+
+    if (authError || !user) {
+        console.error("Cannot record deletion: user not authenticated.");
+        return false;
+    }
+
+    const { error: deletionError } = await supabaseClient
+        .from("habit_deletions")
+        .upsert({
+            user_id: user.id,
+            habit_id: habitId
+        }, {
+            onConflict: "user_id,habit_id"
+        });
+
+    if (deletionError) {
+        console.error("Deletion record failed:", deletionError);
+        return false;
+    }
+
+    const { error: deleteError } = await supabaseClient
+        .from("habits")
+        .delete()
+        .eq("id", habitId)
+        .eq("user_id", user.id);
+
+    if (deleteError) {
+        console.error("Cloud habit deletion failed:", deleteError);
+        return false;
+    }
+
+    return true;
+}
+
 async function syncHabitToCloud(habit) {
     const { data: { user }, error: authError } =
         await supabaseClient.auth.getUser();
@@ -261,127 +305,206 @@ async function syncHabitToCloud(habit) {
     }
 }
 
-// Download and merge habits
 async function syncAllHabits() {
     if (cloudSyncReady || cloudSyncInProgress) return;
 
     cloudSyncInProgress = true;
 
-    const { data: { user }, error: authError } =
-        await supabaseClient.auth.getUser();
+    try {
+        const { data: { user }, error: authError } =
+            await supabaseClient.auth.getUser();
 
-    if (authError || !user) {
-    cloudSyncInProgress = false;
-    return;
-}
-
-    const { data: cloudHabits, error } = await supabaseClient
-        .from("habits")
-        .select("*");
-
-    if (error) {
-    console.error("Cloud download failed:", error);
-    cloudSyncInProgress = false;
-    return;
-}
-
-    const mergedHabits = new Map();
-
-    // Add cloud habits first
-    cloudHabits.forEach(row => {
-        const habit = cloudRowToHabit(row);
-        mergedHabits.set(habit.id, habit);
-    });
-
-    // Merge local habits without losing progress
-    habits.forEach(localHabit => {
-        const existing = mergedHabits.get(localHabit.id);
-
-        if (existing) {
-            mergedHabits.set(localHabit.id, {
-                ...existing,
-                name: localHabit.name,
-                createdAt: localHabit.createdAt,
-                completedDates: [
-                    ...new Set([
-                        ...existing.completedDates,
-                        ...localHabit.completedDates
-                    ])
-                ].sort(),
-                milestoneShown:
-                    existing.milestoneShown || localHabit.milestoneShown
-            });
-        } else {
-            mergedHabits.set(localHabit.id, localHabit);
+        if (authError || !user) {
+            console.error("Authentication error:", authError);
+            return;
         }
-    });
 
-    habits = Array.from(mergedHabits.values());
+        for (const habitId of [...pendingDeletions]) {
+            const deletionRecorded = await recordHabitDeletion(habitId);
 
-    saveHabits();
-    displayHabits();
-
-    // Upload merged data
-    const rows = habits.map(habit =>
-        habitToCloudRow(habit, user.id)
-    );
-
-    if (rows.length > 0) {
-        const { error: uploadError } = await supabaseClient
-            .from("habits")
-            .upsert(rows);
-
-        if (uploadError) {
-    console.error("Cloud upload failed:", uploadError);
-    cloudSyncInProgress = false;
-    return;
-}
-    }
-
-    cloudSyncReady = true;
-    cloudSyncInProgress = false;
-    console.log("HABITFORGE cloud sync completed.");
-// Listen for cloud changes
-habitsChannel = supabaseClient
-    .channel("habits-sync")
-    .on(
-        "postgres_changes",
-        {
-            event: "*",
-            schema: "public",
-            table: "habits",
-            filter: `user_id=eq.${user.id}`
-        },
-        function(payload) {
-
-            // Handle cloud deletion
-            if (payload.eventType === "DELETE") {
-                habits = habits.filter(
-                    habit => habit.id !== payload.old.id
+            if (deletionRecorded) {
+                pendingDeletions = pendingDeletions.filter(
+                    id => id !== habitId
                 );
+                savePendingDeletions();
             }
+        }
 
-            // Handle cloud addition or update
-            else if (payload.new) {
-                const updatedHabit = cloudRowToHabit(payload.new);
+        if (pendingDeletions.length > 0) {
+            console.warn("Pending deletions remain. Sync paused.");
+            return;
+        }
 
-                const index = habits.findIndex(
-                    habit => habit.id === updatedHabit.id
-                );
+        const { data: deletionRecords, error: deletionError } =
+            await supabaseClient
+                .from("habit_deletions")
+                .select("habit_id")
+                .eq("user_id", user.id);
 
-                if (index !== -1) {
-                    habits[index] = updatedHabit;
-                } else {
-                    habits.push(updatedHabit);
+        if (deletionError) {
+            console.error("Deletion records download failed:", deletionError);
+            return;
+        }
+
+        const deletedIds = new Set(
+            (deletionRecords || []).map(item => item.habit_id)
+        );
+
+        const { data: cloudHabits, error: downloadError } =
+            await supabaseClient
+                .from("habits")
+                .select("*")
+                .eq("user_id", user.id);
+
+        if (downloadError) {
+            console.error("Cloud download failed:", downloadError);
+            return;
+        }
+
+        const staleCloudIds = (cloudHabits || [])
+            .filter(row => deletedIds.has(row.id))
+            .map(row => row.id);
+
+        if (staleCloudIds.length > 0) {
+            const { error: cleanupError } = await supabaseClient
+                .from("habits")
+                .delete()
+                .eq("user_id", user.id)
+                .in("id", staleCloudIds);
+
+            if (cleanupError) {
+                console.error("Deleted habits cleanup failed:", cleanupError);
+                return;
+            }
+        }
+
+        const mergedHabits = new Map();
+
+        (cloudHabits || []).forEach(row => {
+            if (deletedIds.has(row.id)) return;
+
+            const habit = cloudRowToHabit(row);
+            mergedHabits.set(habit.id, habit);
+        });
+
+        habits.forEach(localHabit => {
+            if (deletedIds.has(localHabit.id)) return;
+
+            const existing = mergedHabits.get(localHabit.id);
+
+            if (existing) {
+                mergedHabits.set(localHabit.id, {
+                    ...existing,
+                    name: localHabit.name,
+                    createdAt: localHabit.createdAt,
+                    completedDates: [
+                        ...new Set([
+                            ...(existing.completedDates || []),
+                            ...(localHabit.completedDates || [])
+                        ])
+                    ].sort(),
+                    milestoneShown:
+                        existing.milestoneShown || localHabit.milestoneShown
+                });
+            } else {
+                mergedHabits.set(localHabit.id, localHabit);
+            }
+        });
+
+        habits = Array.from(mergedHabits.values());
+
+        saveHabits();
+        displayHabits();
+
+        const rows = habits.map(habit => habitToCloudRow(habit, user.id));
+
+        if (rows.length > 0) {
+            const { error: uploadError } = await supabaseClient
+                .from("habits")
+                .upsert(rows);
+
+            if (uploadError) {
+                console.error("Cloud upload failed:", uploadError);
+                return;
+            }
+        }
+
+        if (habitsChannel) {
+            await supabaseClient.removeChannel(habitsChannel);
+            habitsChannel = null;
+        }
+
+        habitsChannel = supabaseClient
+            .channel("habits-sync")
+            .on(
+                "postgres_changes",
+                {
+                    event: "*",
+                    schema: "public",
+                    table: "habits",
+                    filter: `user_id=eq.${user.id}`
+                },
+                async function(payload) {
+
+                    if (payload.eventType === "DELETE") {
+                        habits = habits.filter(
+                            habit => habit.id !== payload.old.id
+                        );
+
+                    } else if (payload.new) {
+                        const updatedHabit = cloudRowToHabit(payload.new);
+
+                        const { data: deletion, error: deletionCheckError } =
+                            await supabaseClient
+                                .from("habit_deletions")
+                                .select("habit_id")
+                                .eq("user_id", user.id)
+                                .eq("habit_id", updatedHabit.id)
+                                .maybeSingle();
+
+                        if (deletionCheckError) {
+                            console.error(
+                                "Realtime deletion check failed:",
+                                deletionCheckError
+                            );
+                            return;
+                        }
+
+                        if (deletion) {
+                            habits = habits.filter(
+                                habit => habit.id !== updatedHabit.id
+                            );
+                        } else {
+                            const index = habits.findIndex(
+                                habit => habit.id === updatedHabit.id
+                            );
+
+                            if (index !== -1) {
+                                habits[index] = updatedHabit;
+                            } else {
+                                habits.push(updatedHabit);
+                            }
+                        }
+                    }
+
+                    saveHabits();
+                    displayHabits();
                 }
-            }
+            )
+            .subscribe();
 
-            saveHabits();
-            displayHabits();
-        }
-    )
-    .subscribe();
+        cloudSyncReady = true;
+
+        console.log("HABITFORGE cloud sync completed.");
+
+    } catch (error) {
+        console.error("Cloud sync error:", error);
+
+    } finally {
+        cloudSyncInProgress = false;
+    }
 }
+
 
 
 // 5. CHECK 30-DAY MILESTONES
@@ -1287,63 +1410,75 @@ newHabitInput.addEventListener("keydown", function(event) {
 
 // Cancel deletion
 
-cancelDeleteButton.addEventListener("click", function() {
 
+// 8. DELETE HABIT
+
+// Cancel deletion
+cancelDeleteButton.addEventListener("click", function() {
     deleteModal.hidden = true;
     pendingDeleteHabit = null;
 });
 
-
 // Confirm deletion
-
 confirmDeleteButton.addEventListener("click", async function() {
-
     if (!pendingDeleteHabit) return;
-const deletedHabitId = pendingDeleteHabit.id;
-    habits = habits.filter(function(habit) {
-        return habit !== pendingDeleteHabit;
-    });
+
+    const deletedHabitId = pendingDeleteHabit.id;
+
+    if (!pendingDeletions.includes(deletedHabitId)) {
+        pendingDeletions.push(deletedHabitId);
+        savePendingDeletions();
+    }
+
+    habits = habits.filter(
+        habit => habit.id !== deletedHabitId
+    );
 
     saveHabits();
-const { data: { user } } = await supabaseClient.auth.getUser();
 
-if (user) {
-    const { error } = await supabaseClient
-        .from("habits")
-        .delete()
-        .eq("id", deletedHabitId);
-
-    if (error) {
-        console.error("Cloud deletion failed:", error);
-    }
-}
     pendingDeleteHabit = null;
     deleteModal.hidden = true;
 
     displayHabits();
+
+    if (navigator.onLine) {
+        const deletionRecorded =
+            await recordHabitDeletion(deletedHabitId);
+
+        if (deletionRecorded) {
+            pendingDeletions = pendingDeletions.filter(
+                id => id !== deletedHabitId
+            );
+            savePendingDeletions();
+        }
+    }
 });
 
+// Retry pending deletions when internet returns
+window.addEventListener("online", async function() {
+    for (const habitId of [...pendingDeletions]) {
+        const deletionRecorded =
+            await recordHabitDeletion(habitId);
+
+        if (deletionRecorded) {
+            pendingDeletions = pendingDeletions.filter(
+                id => id !== habitId
+            );
+            savePendingDeletions();
+        }
+    }
+
+    if (pendingDeletions.length > 0) {
+        console.warn("Some deletions are still pending.");
+    }
+});
 
 // Close delete modal by clicking outside
-
 deleteModal.addEventListener("click", function(event) {
-
     if (event.target === deleteModal) {
         deleteModal.hidden = true;
         pendingDeleteHabit = null;
     }
-});
-
-
-// 9. EDIT HABIT
-
-
-// Cancel editing
-
-cancelEditButton.addEventListener("click", function() {
-
-    editModal.hidden = true;
-    pendingEditHabit = null;
 });
 
 
@@ -1655,15 +1790,15 @@ const logoutButton = document.getElementById("logout-button");
 const authStatus = document.getElementById("auth-status");
 
 // Google Sign In
+// Google Sign In
 googleLoginButton.addEventListener("click", async function() {
 
     googleLoginButton.disabled = true;
-    googleLoginButton.textContent = "Connecting...";
 
     const { error } = await supabaseClient.auth.signInWithOAuth({
         provider: "google",
         options: {
-            redirectTo: window.location.origin
+            redirectTo: "https://abedisa239-ops.github.io/habitforge/"
         }
     });
 
@@ -1673,8 +1808,8 @@ googleLoginButton.addEventListener("click", async function() {
         googleLoginButton.disabled = false;
         googleLoginButton.innerHTML = "<span>G</span> Sign in";
     }
-});
 
+});
 // Google Sign Out
 logoutButton.addEventListener("click", async function() {
 
